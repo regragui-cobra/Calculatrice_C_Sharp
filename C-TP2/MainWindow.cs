@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
 using Gtk;
-
+using System.Data;
 public partial class MainWindow : Gtk.Window
+
 {
     private int state;
     private int state_;
     private int state_point;
+    private string lastchar;
+
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
         state = 0;
@@ -164,9 +167,13 @@ public partial class MainWindow : Gtk.Window
         //TODO: gerer les exception suivant la fonction d'evaluation
         if (state == 0)
         {
-            if (state_point == 0 || label1.Text.Substring(label1.Text.Length - 1) != ".")
+            String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ".", "(", ")" };
+            String[] symbols = { ".", "(" };
+            if (label1.Text.Length != 0) { lastchar = label1.Text.Substring(label1.Text.Length - 1); }
+            else { lastchar = " "; }
+            if (state_point == 0)
             {
-                if (state_ == 0)
+                if (state_ == 0 && !nums.Contains(lastchar))
                 {
 
                     label1.Text += "(";
@@ -176,10 +183,13 @@ public partial class MainWindow : Gtk.Window
                 }
                 else
                 {
+                    if (state_ != 0 && !symbols.Contains(lastchar))
+                    {
 
-                    label1.Text += ")";
-                    state_ = 0;
-                    state_point = 0;
+                        label1.Text += ")";
+                        state_ = 0;
+                        state_point = 0;
+                    }
                 }
             }
         }
@@ -211,7 +221,7 @@ public partial class MainWindow : Gtk.Window
         String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")" };
         if (label1.Text.Length != 0)
         {
-            String lastchar = label1.Text.Substring(label1.Text.Length - 1);
+            lastchar = label1.Text.Substring(label1.Text.Length - 1);
             if (nums.Contains(lastchar))
             {
                 label1.Text += "/";
@@ -225,7 +235,7 @@ public partial class MainWindow : Gtk.Window
         String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
         if (label1.Text.Length != 0)
         {
-            String lastchar = label1.Text.Substring(label1.Text.Length - 1);
+            lastchar = label1.Text.Substring(label1.Text.Length - 1);
             if (nums.Contains(lastchar) && state_point == 0)
             {
                 label1.Text += ".";
@@ -239,7 +249,7 @@ public partial class MainWindow : Gtk.Window
         String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")" };
         if (label1.Text.Length != 0)
         {
-            String lastchar = label1.Text.Substring(label1.Text.Length - 1);
+            lastchar = label1.Text.Substring(label1.Text.Length - 1);
             if (nums.Contains(lastchar))
             {
                 label1.Text += "%";
@@ -253,7 +263,7 @@ public partial class MainWindow : Gtk.Window
         String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")" };
         if (label1.Text.Length != 0)
         {
-            String lastchar = label1.Text.Substring(label1.Text.Length - 1);
+            lastchar = label1.Text.Substring(label1.Text.Length - 1);
             if (nums.Contains(lastchar))
             {
                 label1.Text += "*";
@@ -267,7 +277,7 @@ public partial class MainWindow : Gtk.Window
         String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")" };
         if (label1.Text.Length != 0)
         {
-            String lastchar = label1.Text.Substring(label1.Text.Length - 1);
+            lastchar = label1.Text.Substring(label1.Text.Length - 1);
             if (nums.Contains(lastchar))
             {
                 label1.Text += "-";
@@ -281,7 +291,7 @@ public partial class MainWindow : Gtk.Window
         String[] nums = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", ")" };
         if (label1.Text.Length != 0)
         {
-            String lastchar = label1.Text.Substring(label1.Text.Length - 1);
+            lastchar = label1.Text.Substring(label1.Text.Length - 1);
             if (nums.Contains(lastchar))
             {
                 label1.Text += "+";
@@ -292,8 +302,14 @@ public partial class MainWindow : Gtk.Window
 
     protected void OnTogglebutton15Clicked(object sender, EventArgs e)
     {
-        /*TODO: implement calculation logic using DataTable().Compute or Convert.ToInt32 
-        please do refer to the following stackoverflow question 
-        https://stackoverflow.com/questions/21950093/string-calculator*/
+        try
+        {
+            label1.Text = new DataTable().Compute(label1.Text, null).ToString();
+        }
+        catch
+        {
+            label1.Text = "Erreur";
+        }
+        state = 1;
     }
 }
